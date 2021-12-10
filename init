@@ -1,0 +1,25 @@
+#!/bin/sh
+
+IMAGE="asteroids:0.1.0"
+NAME="dasteroids"
+
+build() {
+	docker build . -t $IMAGE
+}
+
+container() {
+	clean
+	docker run \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		-e "DISPLAY=unix${DISPLAY}" \
+		--device /dev/dri \
+		--name $NAME \
+		$IMAGE
+}
+
+clean() {
+	docker stop $NAME
+	docker rm $NAME
+}
+
+$*
