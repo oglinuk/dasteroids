@@ -1,9 +1,10 @@
-FROM ubuntu:18.04
+FROM alpine:latest
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y vim \
-	build-essential \
-	liballegro*5.2 \
-	liballegro*5-dev
+RUN apk update && apk add vim \
+	build-base\
+	allegro \
+	allegro-dev \
+	mesa-dri-intel
 ADD . /src
 WORKDIR /src
 RUN make

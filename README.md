@@ -187,3 +187,10 @@ X Error of failed request:  BadValue (integer parameter out of range for operati
   Serial number of failed request:  28
   Current serial number in output stream:  29
 ```
+
+## Day 2
+
+After looking up the above error, I found the missing library
+`mesa-dri-intel`. We now have a working docker container using `alpine`
+for the base image! The container went from 741MB to 427MB, which is
+about 42% reduction of size.
