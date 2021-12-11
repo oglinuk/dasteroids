@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 IMAGE="asteroids:0.1.0"
 NAME="dasteroids"
@@ -8,13 +8,18 @@ build() {
 }
 
 container() {
-	clean
-	docker run \
+	if [[ -n $(docker ps -a | grep $NAME) ]]; then
+		clean
+	fi
+
+	xhost local:root
+	docker run -it \
 		-v /tmp/.X11-unix:/tmp/.X11-unix \
 		-e "DISPLAY=unix${DISPLAY}" \
 		--device /dev/dri \
 		--name $NAME \
 		$IMAGE
+	xhost -local:root
 }
 
 clean() {

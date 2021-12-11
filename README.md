@@ -49,7 +49,7 @@ The command '/bin/sh -c make' returned a non-zero code: 2
 ```
 
 The key to the above error is the `undefined reference`, which means that
-the allegro libraries are linking properly. I fixed this issue by
+the Allegro libraries are linking properly. I fixed this issue by
 replacing what the quickstart suggests with `-lallegro -lallegro_font` in
 the `Makefile`.
 
@@ -74,6 +74,9 @@ docker run \
 	asteroids
 ```
 
+**Note: `xhost local:root` was required**, see [here for more
+info](https://github.com/jessfraz/dockerfiles/issues/6#issuecomment-78040995)
+
 From what I understand after some searching, `/tmp/.X11-unix` is a [unix
 domain socket](https://www.man7.org/linux/man-pages/man7/unix.7.html)
 (`man unix`), `$DISPLAY` is the [X server display name]() (`man x`), and
@@ -83,3 +86,41 @@ will explore these in more detail next time, but for now lets see the
 results.
 
 ![](hello-world.png)
+
+## Day 1
+
+Yesterday I got my environment and a hello world Allegro example running
+within a docker container. Today I am going to aim to get a spaceship to
+render on the window, and maybe moving around.
+
+The first thing to do is to create a `Spaceship` struct, a default
+constructor/deconstructor, and a draw function (which is taken from the
+Head First C book). When trying to build the container, it results in
+`undefined reference to 'al_draw_line'`. After finding
+[`al_draw_line`](https://liballeg.org/a5docs/trunk/primitives.html#al_draw_line),
+I found that I needed `#include <allegro5/allegro_primitives.h>` and
+`-lallegro_primitives`. The container builds now, but when trying to run,
+it outputs `al_draw_prim: Assertion 'addon_initialized' failed.`, which
+after a quick search, found that I was missing
+`al_init_primitive_addons();` before the main loop. It works, but no
+ship.
+
+I changed from the 4 calls of `al_draw_line`, to a single call of
+`al_draw_triangle`, which will hopefully simplify things. Rather than
+hardcoding the `x,y` coordinates, Ive set `ship->screen_x` to `screen_w /
+2` and `ship->screen_y` to `screen_h / 2`. This will always set the
+starting `x,y` coordinates of the ship to the center of the screen
+resolution. It also means that when we call `al_draw_triangle`, we can
+leverage the starting coordinates for drawing the triangle. It looks like
+the following.
+
+```C
+al_draw_triangle(ship->screen_x, ship->screen_y,
+		ship->screen_x+10, ship->screen_y+23,
+		ship->screen_x-10, ship->screen_y+23,
+		ship->color, ship->thickness);
+```
+
+Behold our beautiful purple triangle.
+
+![](spaceship.png)
