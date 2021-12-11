@@ -124,3 +124,40 @@ al_draw_triangle(ship->screen_x, ship->screen_y,
 Behold our beautiful purple triangle.
 
 ![](spaceship.png)
+
+Adding movement to the ship was as easy as the following.
+
+```C
+
+bool running = true;
+
+while (running) {
+	al_wait_for_event(queue, &event);
+
+	if (event.type == ALLEGRO_EVENT_TIMER)
+		redraw = true;
+
+	if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
+		switch (event.keyboard.keycode) {
+		caes ALLEGRO_KEY_W:
+			ship->screen_y -= ship->speed;
+			break;
+		caes ALLEGRO_KEY_A:
+			ship->screen_x -= ship->speed;
+			break;
+		caes ALLEGRO_KEY_S:
+			ship->screen_y += ship->speed;
+			break;
+		caes ALLEGRO_KEY_D:
+			ship->screen_x += ship->speed;
+			break;
+		caes ALLEGRO_KEY_ESCAPE:
+			running = false;
+			break;
+		}
+	}
+}
+```
+
+This is only the first iteration of the movement, tomorrow I will work on
+turning and improving on the movement.

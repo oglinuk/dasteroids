@@ -5,8 +5,8 @@
 
 int main()
 {
-	int sw = 420;//1280; // screen width
-	int sh = 210;//720; // screen height
+	int sw = 1280; // screen width
+	int sh = 720; // screen height
 	Spaceship *ship = new_ship(sw, sh);
 
 	printf("Ship: direction: %f, speed: %f, alive: %d (r: %f | g: %f | b: %f) ship ...\n",
@@ -29,18 +29,35 @@ int main()
 	al_register_event_source(queue, al_get_display_event_source(display));
 	al_register_event_source(queue, al_get_timer_event_source(timer));
 
+	bool running = true;
 	bool redraw = true;
 	ALLEGRO_EVENT event;
 
 	al_start_timer(timer);
-	while(1) {
+	while (running) {
 		al_wait_for_event(queue, &event);
 
 		if (event.type == ALLEGRO_EVENT_TIMER)
 			redraw = true;
-		else if (event.type == ALLEGRO_EVENT_KEY_DOWN ||
-			event.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-			break;
+
+		if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
+			switch (event.keyboard.keycode) {
+			case ALLEGRO_KEY_W:
+				ship->screen_y -= ship->speed;
+				break;
+			case ALLEGRO_KEY_A:
+				ship->screen_x -= ship->speed;
+				break;
+			case ALLEGRO_KEY_S:
+				ship->screen_y += ship->speed;
+				break;
+			case ALLEGRO_KEY_D:
+				ship->screen_x += ship->speed;
+				break;
+			case ALLEGRO_KEY_ESCAPE:
+				running = false;
+				break;
+			}
 		}
 
 

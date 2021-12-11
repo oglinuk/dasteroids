@@ -8,7 +8,7 @@ struct Spaceship* new_ship(int screen_w, int screen_h)
 	ship->screen_x = screen_w / 2;
 	ship->screen_y = screen_h / 2;
 	ship->direction = 1.0;
-	ship->speed = 1.0;
+	ship->speed = 10.0;
 	ship->thickness = 1.0;
 	ship->alive = true;
 	ship->color = al_map_rgba_f(0.5, 0, 0.5, 1);
