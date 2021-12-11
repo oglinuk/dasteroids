@@ -1,7 +1,8 @@
 # Asteroids
 
 A C based asteroids clone using the
-[Allegro](https://github.com/liballeg/allegro5) framework.
+[Allegro](https://github.com/liballeg/allegro5) framework. The primary
+purpose of this project is to continue my learning in C.
 
 ## Day 0
 
@@ -160,4 +161,29 @@ while (running) {
 ```
 
 This is only the first iteration of the movement, tomorrow I will work on
-turning and improving on the movement.
+turning and improving on the movement. The first refactor I made in the
+`Dockerfile` was changing from `ubuntu:20.04` to `ubuntu:18.04`. Tried
+playing around with `alpine:latest`, using `allegro`/`allegro-dev` but
+get the following error now. Time to find `libGL` for `alpine`. For now
+shifting to `ubuntu:18.04` has already shaved ~200MB off the docker
+image.
+
+```BASH
+libGL error: MESA-LOADER: failed to open iris: Error loading shared
+library /usr/lib/xorg/modules/dri/iris_dri.so: No such file or directory (search paths /usr/lib/xorg/modules/dri, suffix _dri)
+libGL error: failed to load driver: iris
+libGL error: MESA-LOADER: failed to open swrast: Error loading shared
+library /usr/lib/xorg/modules/dri/swrast_dri.so: No such file or directory (search paths /usr/lib/xorg/modules/dri, suffix _dri)
+libGL error: failed to load driver: swrast
+libGL error: MESA-LOADER: failed to open iris: Error loading shared
+library /usr/lib/xorg/modules/dri/iris_dri.so: No such file or directory (search paths /usr/lib/xorg/modules/dri, suffix _dri)
+libGL error: failed to load driver: iris
+libGL error: MESA-LOADER: failed to open swrast: Error loading shared library /usr/lib/xorg/modules/dri/swrast_dri.so: No such file or directory (search paths /usr/lib/xorg/modules/dri, suffix _dri)
+libGL error: failed to load driver: swrast
+X Error of failed request:  BadValue (integer parameter out of range for operation)
+  Major opcode of failed request:  150 (GLX)
+  Minor opcode of failed request:  24 (X_GLXCreateNewContext)
+  Value in failed request:  0x0
+  Serial number of failed request:  28
+  Current serial number in output stream:  29
+```

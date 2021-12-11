@@ -12,9 +12,6 @@ struct Spaceship* new_ship(int screen_w, int screen_h)
 	ship->thickness = 1.0;
 	ship->alive = true;
 	ship->color = al_map_rgba_f(0.5, 0, 0.5, 1);
-	printf("CONSTRUCTOR: dir: %f, speed: %f, (r: %f | g: %f | b: %f) ship ...\n",
-		ship->direction, ship->speed,
-		ship->color.r, ship->color.g, ship->color.b);
 
 	return ship;
 }

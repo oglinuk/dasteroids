@@ -1,6 +1,7 @@
-FROM ubuntu:20.04
+FROM ubuntu:18.04
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt install -y vim \
+RUN apt-get update && apt-get install -y vim \
+	build-essential \
 	liballegro*5.2 \
 	liballegro*5-dev
 ADD . /src

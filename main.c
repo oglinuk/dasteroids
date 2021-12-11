@@ -9,10 +9,6 @@ int main()
 	int sh = 720; // screen height
 	Spaceship *ship = new_ship(sw, sh);
 
-	printf("Ship: direction: %f, speed: %f, alive: %d (r: %f | g: %f | b: %f) ship ...\n",
-		ship->direction, ship->speed, ship->alive,
-		ship->color.r, ship->color.g, ship->color.b);
-
 	al_init();
 	al_install_keyboard();
 	if (!al_init_primitives_addon()) {
