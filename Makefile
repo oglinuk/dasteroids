@@ -1,5 +1,9 @@
+BIN=asteroids
+SRC=src/*
+FLAGS=-lallegro -lallegro_font -lallegro_primitives
+
 all:
-	gcc *.c *.h -o main -lallegro -lallegro_font -lallegro_primitives
+	gcc ${SRC} -o ${BIN} ${FLAGS}
 
 clean:
-	rm main
+	rm ${BIN}

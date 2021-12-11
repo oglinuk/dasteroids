@@ -86,7 +86,7 @@ manager](https://www.daemon-systems.org/man/drm.4.html) (`man drm`). I
 will explore these in more detail next time, but for now lets see the
 results.
 
-![](hello-world.png)
+![](images/hello-world.png)
 
 ## Day 1
 
@@ -124,7 +124,7 @@ al_draw_triangle(ship->screen_x, ship->screen_y,
 
 Behold our beautiful purple triangle.
 
-![](spaceship.png)
+![](images/spaceship.png)
 
 Adding movement to the ship was as easy as the following.
 

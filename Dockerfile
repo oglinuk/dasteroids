@@ -7,4 +7,4 @@ RUN apt-get update && apt-get install -y vim \
 ADD . /src
 WORKDIR /src
 RUN make
-CMD ["./main"]
+CMD ["./asteroids"]
