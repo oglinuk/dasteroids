@@ -1,6 +1,4 @@
 #include <stdbool.h>
-#include <stdio.h>
-
 #include "spaceship.h"
 
 int main()
@@ -39,16 +37,16 @@ int main()
 		if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (event.keyboard.keycode) {
 			case ALLEGRO_KEY_W:
-				ship->screen_y -= ship->speed;
+				ship->location.y -= ship->acceleration_speed;
 				break;
 			case ALLEGRO_KEY_A:
-				ship->screen_x -= ship->speed;
+				ship->yaw -= ship->turn_speed;
 				break;
 			case ALLEGRO_KEY_S:
-				ship->screen_y += ship->speed;
+				ship->location.y += ship->acceleration_speed;
 				break;
 			case ALLEGRO_KEY_D:
-				ship->screen_x += ship->speed;
+				ship->yaw += ship->turn_speed;
 				break;
 			case ALLEGRO_KEY_ESCAPE:
 				running = false;
@@ -56,6 +54,9 @@ int main()
 			}
 		}
 
+		// this bounds the player to the screen (man fmod)
+		ship->location.x = fmod(ship->location.x + sw, sw);
+		ship->location.y = fmod(ship->location.y + sh, sh);
 
 		if (redraw && al_is_event_queue_empty(queue)) {
 			al_clear_to_color(al_map_rgb(0, 0, 0));

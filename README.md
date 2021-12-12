@@ -4,6 +4,12 @@ A C based asteroids clone using the
 [Allegro](https://github.com/liballeg/allegro5) framework. The primary
 purpose of this project is to continue my learning in C.
 
+# Getting Started
+
+`./init build && ./init container`
+
+# Notes
+
 ## Day 0
 
 Setup my environment in Docker using the `ubuntu:20.04` image for the
@@ -50,9 +56,10 @@ The command '/bin/sh -c make' returned a non-zero code: 2
 ```
 
 The key to the above error is the `undefined reference`, which means that
-the Allegro libraries are linking properly. I fixed this issue by
+the Allegro libraries are not linking properly. I fixed this issue by
 replacing what the quickstart suggests with `-lallegro -lallegro_font` in
-the `Makefile`.
+the `Makefile`. For more information look at `man gcc` and search for
+`-llibrary`.
 
 Running the docker image results in `main:
 /build/allegro5-AcGyua/allegro5-5.2.6.0/src/events.c:166:
@@ -63,8 +70,11 @@ we can see its a test assertion of the variable `source` that is failing.
 If we look in `main.c`, we can see that we are calling
 `al_register_event_source` three times and passing `display` during one
 of those calls. My assumption is that `display` is NULL since the
-container doesnt have a display by default. To fix this I ran the
-following.
+container doesnt have a display by default. To fix this I drew from
+[Jess Frazelles .dockerfunc
+file](https://github.com/jessfraz/dotfiles/blob/master/.dockerfunc)
+(more specifically from her [vlc
+implementation](https://github.com/jessfraz/dotfiles/blob/master/.dockerfunc#L1178)).
 
 ```
 docker run \
@@ -86,7 +96,7 @@ manager](https://www.daemon-systems.org/man/drm.4.html) (`man drm`). I
 will explore these in more detail next time, but for now lets see the
 results.
 
-![](images/hello-world.png)
+![](media/hello-world.png)
 
 ## Day 1
 
@@ -124,7 +134,7 @@ al_draw_triangle(ship->screen_x, ship->screen_y,
 
 Behold our beautiful purple triangle.
 
-![](images/spaceship.png)
+![](media/spaceship.png)
 
 Adding movement to the ship was as easy as the following.
 
@@ -141,16 +151,16 @@ while (running) {
 	if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
 		switch (event.keyboard.keycode) {
 		caes ALLEGRO_KEY_W:
-			ship->screen_y -= ship->speed;
+			ship->location.y -= ship->speed;
 			break;
 		caes ALLEGRO_KEY_A:
-			ship->screen_x -= ship->speed;
+			ship->location.x -= ship->speed;
 			break;
 		caes ALLEGRO_KEY_S:
-			ship->screen_y += ship->speed;
+			ship->location.y += ship->speed;
 			break;
 		caes ALLEGRO_KEY_D:
-			ship->screen_x += ship->speed;
+			ship->location.x += ship->speed;
 			break;
 		caes ALLEGRO_KEY_ESCAPE:
 			running = false;
@@ -194,3 +204,59 @@ After looking up the above error, I found the missing library
 `mesa-dri-intel`. We now have a working docker container using `alpine`
 for the base image! The container went from 741MB to 427MB, which is
 about 42% reduction of size.
+
+We left off yesterday with basic movement implemented, so today is going
+to be focusing on refining the movement and making it more like the
+classic asteroids. That means implementing Newtons first law of motion
+(an object in motion remains so unless acted upon by a force), and
+implementing turning or
+[yaw](https://en.wikipedia.org/wiki/Yaw_%28rotation%29). Before I add
+those, I want to make a boundary for the game, so the player cant go off
+the screen. This is super easy with `fmod` (floating-point remainder
+function), and looks like the following.
+
+```C
+ship->location.x = fmod(ship->location.x + sw, sw);
+ship->location.y = fmod(ship->location.y + sh, sh);
+```
+
+After looking into applying a rotation to a triangle, I came across [this
+stackoverflow post](https://stackoverflow.com/a/44748651). In this post
+one of the answers suggested defining the ship shape using a variable
+number of vertices. I really like this idea, since I would like to add a
+feature down the road where after a certain number of accumulated points,
+your ship gets upgraded. For now though, I am going to hardcode the
+number of vertices to two. Building and running gives us our new ship! We
+still need to add the changes to implement a yaw axis, which was
+accomplished by making the following changes to `main.c`.
+
+```C
+switch (event.keyboard.keycode) {
+	case ALLEGRO_KEY_W:
+		ship->location.y -= ship->acceleration_speed;
+		break;
+	case ALLEGRO_KEY_A:
+		ship->yaw -= ship->turn_speed;
+		break;
+	case ALLEGRO_KEY_S:
+		ship->location.y += ship->acceleration_speed;
+		break;
+	case ALLEGRO_KEY_D:
+		ship->yaw += ship->turn_speed;
+		break;
+	case ALLEGRO_KEY_ESCAPE:
+		running = false;
+		break;
+}
+```
+
+The `turn_speed` value is set to `M_E / 10`, which is `.27182818284...`.
+You can see the full constant at `/usr/include/math.h`.
+
+We now have a ship with a yaw axis!
+
+![](media/yaw-ship.gif)
+
+I will spend tomorrow working on getting movement in the direction of the
+yaw axis, and do a more in depth review of the code suggested in the
+stack overflow answer.
