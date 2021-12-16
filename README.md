@@ -1,4 +1,4 @@
-# Asteroids
+# Dasteroids
 
 A C based asteroids clone using the
 [Allegro](https://github.com/liballeg/allegro5) framework. The primary
@@ -260,3 +260,131 @@ We now have a ship with a yaw axis!
 I will spend tomorrow working on getting movement in the direction of the
 yaw axis, and do a more in depth review of the code suggested in the
 stack overflow answer.
+
+## Day 3
+
+Yesterday we discovered a better way to structure the ship, and got the
+ship turning on a yaw axis. First lets break down what was suggested in
+the stack overflow post.
+
+```C
+typedef struct {
+    double  x;
+    double  y;
+} vec2d;
+
+typedef struct {
+    vec2d        center;
+    size_t       vertices;
+    const vec2d *shape;     /* Un-rotated ship vertices */
+    double       direction; /* Ship direction, in radians */
+    vec2d       *vertex;    /* Rotated ship vertices */
+} Ship;
+
+const vec2d default_shape[] = {
+    {   0.0, -5.0 },
+    { -15.0, 25.0 },
+    {  15.0, 25.0 },
+};
+
+void updateShip(Ship *ship)
+{
+    const double c = cos(ship->direction);
+    const double s = sin(ship->direction);
+    size_t       i;
+
+    for (i = 0; i < ship->vertices; i++) {
+        ship->vertex[i].x = ship->center.x +
+					c*ship->shape[i].x - s*ship->shape[i].y;
+        ship->vertex[i].y = ship->center.y +
+					s*ship->shape[i].x + c*ship->shape[i].y;
+    }
+}
+
+void initShip(Ship *ship, const size_t vertices, const vec2d *shape)
+{
+    ship->center.x = 0.5 * SCREEN_W;
+    ship->center.y = 0.5 * SCREEN_H;
+
+    if (vertices > 2 && shape != NULL) {
+        ship->vertices = vertices;
+        ship->shape    = shape;
+    } else {
+        ship->vertices = (sizeof default_shape) /
+					(sizeof default_shape[0]);
+        ship->shape    = default_shape;
+    }
+
+    ship->direction = 0;
+
+    ship->vertex = malloc(ship->vertices * sizeof ship->vertex[0]);
+    if (!ship->vertex) {
+        fprintf(stderr, "Out of memory.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    updateShip(ship);
+}
+```
+
+The `vec2d` struct represents a 2 dimensional vector and is used for
+three things in the `Ship` struct: `center`, `shape`, and `vertex`. The
+properties of `Ship` are self explanatory.
+
+The `default_shape` variable is an array of `vec2d` structs which contain
+the coordinates for an unrotated ship. It is important to note that even
+though there are three vertices, only two will be visible unless youre
+working in 3D.
+
+The `update_ship` function is where the maths comes in. Two variables are
+declared (`c` and `s`) and are set to the `cos` and `sin` values of
+`ship->direction`. Then, for the number of `ship->vertices`, it applies a
+2D rotation.
+
+Finally, `init_ship`, is a function that initializes a given `ship`
+variable. It sets `ship->center` to the center of the screen and sets
+`ship->direction` to `0`. If the given `vertices` is greater than two and
+`shape` is not `NULL`, then use them for `ship->vertices` and
+`ship->shape`. Otherwise use `default_shape` and the result of
+`(sizeof default_shape) / (sizeof default_shape[0])`. Printing out the
+values gives us `Sizeof(default_ship): 24 | Sizeof(default_ship[0]): 8
+== 3`. So where is the `24` and `8` coming from? If we print
+`sizeof(float)`, we get `4`. Since there are six floats in
+`default_ship`, the total size is `24`. The size of the first element
+(`default_ship[0]`) is `{ 0.0, -5.0 }` is what gives us the `8`. What
+this means is we can add or remove any number of elements and this will
+scale with any size of `default_shape`. Finally, the code is calling
+`malloc` and passing `ship->vertices * sizeof ship->vertex[0]` (3 * 8).
+If you're confused by the comment and what the purpose of `ship->vertex`
+is like I was, then think about it as the variable used for storing *all*
+rotated vertices of the ship. To better explain this, I put a print
+statement in the `update_ship` loop and got the following.
+
+```
+ship->vertex[0].x: 640.000000 | ship->vertex[0].y: 360.000000
+ship->vertex[1].x: 630.000000 | ship->vertex[1].y: 385.000000
+ship->vertex[2].x: 650.000000 | ship->vertex[2].y: 385.000000
+```
+
+So how is it able to store multiple `vertex` variables in `vec2d
+*vertex`? From what I understand, when dealing with pointers and
+dynamically allocated memory, you can store any number of values as long
+as there is enough allocated space. So in the case of `ship->vertex`, it
+actually stores a variable number of `vec2d` structs. `TODO: verify with
+someone more exprienced in C.`
+
+I added an additional feature which draws lines across the x and y axis
+of the screen using `ship->location.x` and `ship->location.y`. This still
+needs tweaking, as it does not rotate with the ship.
+
+```C
+// draw line across the screen along the x axis
+al_draw_line(ship->location.x-sw, ship->location.y,
+	ship->location.x+sw, ship->location.y,
+	al_map_rgba_f(1, 0, 0, 1), 1);
+
+// draw line across the screen along the y axis
+al_draw_line(ship->location.x, ship->location.y+sh,
+	ship->location.x, ship->location.y-sh,
+	al_map_rgba_f(1, 0, 0, 1), 1);
+```

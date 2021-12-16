@@ -1,4 +1,4 @@
-BIN=asteroids
+BIN=dasteroids
 SRC=src/*
 FLAGS=-lallegro -lallegro_font -lallegro_primitives
 

@@ -37,13 +37,15 @@ int main()
 		if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (event.keyboard.keycode) {
 			case ALLEGRO_KEY_W:
-				ship->location.y -= ship->acceleration_speed;
+				if (ship->velocity < 9.899494937)
+					ship->velocity += ship->acceleration_speed;
 				break;
 			case ALLEGRO_KEY_A:
 				ship->yaw -= ship->turn_speed;
 				break;
 			case ALLEGRO_KEY_S:
-				ship->location.y += ship->acceleration_speed;
+				if (ship->velocity > 0)
+					ship->velocity -= ship->acceleration_speed;
 				break;
 			case ALLEGRO_KEY_D:
 				ship->yaw += ship->turn_speed;
@@ -54,6 +56,9 @@ int main()
 			}
 		}
 
+		// keep moving the ship the ship
+		ship->location.y -= ship->velocity;
+
 		// this bounds the player to the screen (man fmod)
 		ship->location.x = fmod(ship->location.x + sw, sw);
 		ship->location.y = fmod(ship->location.y + sh, sh);
@@ -62,7 +67,27 @@ int main()
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 			al_draw_text(font, al_map_rgb(255, 255, 255),
 				0, 0, 0, "Hello world from Allegro! Esc to quit.");
+
 			draw_ship(ship);
+
+			// draw line across the screen along the x axis
+			al_draw_line(ship->location.x-sw, ship->location.y,
+				ship->location.x+sw, ship->location.y,
+				al_map_rgba_f(1, 0, 0, 1), 1);
+
+			// draw line across the screen along the y axis
+			al_draw_line(ship->location.x, ship->location.y+sh,
+				ship->location.x, ship->location.y-sh,
+				al_map_rgba_f(1, 0, 0, 1), 1);
+
+			/*
+			// draw lines across screen center
+			al_draw_line(sw/2, 0.0, sw/2, sh,
+				ship->color, 1);
+			al_draw_line(0.0, sh/2, sw, sh/2,
+				ship->color, 1);
+			*/
+
 			al_flip_display();
 
 			redraw = false;

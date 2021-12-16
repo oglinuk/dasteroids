@@ -4,6 +4,7 @@
 #include <math.h>
 #include <stdio.h>
 
+// see https://stackoverflow.com/a/44748651 && Day 3
 typedef struct vec2d {
 	float x;
 	float y;
@@ -17,6 +18,7 @@ typedef struct Spaceship {
 	float yaw;
 	float acceleration_speed;
 	float turn_speed;
+	float velocity;
 	float thickness;
 	bool alive;
 	ALLEGRO_COLOR color;
