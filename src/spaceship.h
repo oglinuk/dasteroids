@@ -11,10 +11,9 @@ typedef struct vec2d {
 } vec2d;
 
 typedef struct Spaceship {
-	const vec2d *shape;
-	vec2d *vertex;
-	int vertices;
 	vec2d location;
+	int sw;
+	int sh;
 	float yaw;
 	float acceleration_speed;
 	float turn_speed;
@@ -22,6 +21,7 @@ typedef struct Spaceship {
 	float thickness;
 	bool alive;
 	ALLEGRO_COLOR color;
+	ALLEGRO_TRANSFORM transform;
 } Spaceship;
 
 Spaceship* new_ship(int screen_w, int screen_h);
