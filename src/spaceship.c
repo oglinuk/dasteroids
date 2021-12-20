@@ -1,30 +1,25 @@
-#include "spaceship.h"
+#include "entity.h"
 
-Spaceship* new_ship(int screen_w, int screen_h)
+Entity* new_ship(int screen_w, int screen_h)
 {
-	Spaceship *ship = malloc(sizeof(Spaceship));
+	Entity *ship = malloc(sizeof(Entity));
 
 	ship->location.x = screen_w / 2;
 	ship->location.y = screen_h / 2;
-	ship->sw = screen_w;
-	ship->sh = screen_h;
+	ship->screen.x = screen_w;
+	ship->screen.y = screen_h;
 	ship->yaw = 0.0;
 	ship->acceleration_speed = M_SQRT2;
 	ship->turn_speed = M_PI / 6;
 	ship->velocity= 0.0;
 	ship->thickness = 1.0;
 	ship->alive = true;
-	ship->color = al_map_rgba_f(0.5, 0, 0.5, 1);
+	ship->color = al_map_rgba_f(0.0, 1.0, 0.0, 1);
 
 	return ship;
 }
 
-void destroy_ship(Spaceship *ship)
-{
-	free(ship);
-}
-
-void draw_ship(Spaceship* ship)
+void draw_ship(Entity *ship)
 {
 	al_identity_transform(&ship->transform);
 	al_rotate_transform(&ship->transform, ship->yaw);
@@ -37,17 +32,7 @@ void draw_ship(Spaceship* ship)
 	al_draw_line(-6.0, 4.0, -1.0, 4.0, ship->color, ship->thickness);	
 	al_draw_line(6.0, 4.0, 1.0, 4.0, ship->color, ship->thickness);	
 
-	update_ship(ship);
+	update_entity(ship, "ship");
 }
 
-void update_ship(Spaceship *ship)
-{
-	ship->location.x -= sin(-ship->yaw) * ship->velocity;
-	ship->location.y -= cos(-ship->yaw) * ship->velocity;
 
-	ship->location.x = fmod(ship->location.x + ship->sw, ship->sw);
-	ship->location.y = fmod(ship->location.y + ship->sh, ship->sh);
-
-	printf("ship->yaw: %f | ship->location.x: %f | ship->location.y: %f\n",
-		ship->yaw, ship->location.x, ship->location.y);
-}

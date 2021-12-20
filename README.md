@@ -461,3 +461,98 @@ void update_ship(Spaceship *ship)
 This is our new (but really the old) ship, and it moves around!
 
 ![](media/new-old-ship.png)
+
+## Day 5
+
+Todays focus is going to be implementing the enemy that gives this
+classic its name, the asteroid. Since an asteroid is essentially a
+spaceship with random starting inputs, we can leverage this by converting
+`spaceship.h` to `entity.h`. It now looks like the following.
+
+```C
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_primitives.h>
+#include <math.h>
+#include <stdio.h>
+
+typedef struct vec2d {
+	float x;
+	float y;
+} vec2d;
+
+typedef struct Entity {
+	vec2d location;
+	vec2d screen;
+	float yaw;
+	float acceleration_speed;
+	float turn_speed;
+	float velocity;
+	float thickness;
+	bool alive;
+	ALLEGRO_COLOR color;
+	ALLEGRO_TRANSFORM transform;
+} Entity;
+
+void update_entity(Entity *e, const char* name);
+void destroy_entity(Entity *e);
+
+Entity* new_ship(int screen_w, int screen_h);
+void draw_ship(Entity *ship);
+
+Entity* new_asteroid(int screen_w, int screen_h);
+void draw_asteroid(Entity *asteroid);
+```
+
+By changing to a generic `Entity` struct, we can create a constructor for
+`ship` and `asteroid`, which both return an `Entity` type. This also
+enables for a single update and destroy function. This would be the same
+for the draw function, but will implement that down the road (TODO). For
+now, keeping things simple.
+
+The `asteroids.c` constructor looks like the following.
+
+```C
+#include "entity.h"
+
+Entity* new_asteroid(int screen_w, int screen_h)
+{
+	Entity *asteroid = malloc(sizeof(Entity));
+
+	asteroid->location.x = rand() % screen_w;
+	asteroid->location.y = rand() % screen_h;
+	asteroid->screen.x = screen_w;
+	asteroid->screen.y = screen_h;
+	asteroid->yaw = (rand() / (float)RAND_MAX) * 10;
+	asteroid->velocity = (rand() / (float)RAND_MAX) * 10;
+	asteroid->thickness = 2.0;
+	asteroid->alive = true;
+	asteroid->color = al_map_rgba_f(1, 1, 1, 1);
+
+	return asteroid;
+}
+```
+
+Everything is pretty self explanatory, but I encourage you to tweak the
+statements involving `rand()` and see the results.
+
+The following is how to achieve variable number of asteroids.
+
+```C
+int difficulty = 10;
+Entity *asteroids[difficulty];
+
+int i;
+for (i = 0; i < difficulty; i++)
+	asteroids[i] = new_asteroid(sw, sh);
+
+for (i = 0; i < difficulty; i++)
+	draw_asteroid(asteroids[i]);
+
+for (i = 0; i < difficulty; i++)
+	destroy_entity(asteroids[i]);
+```
+
+With that we now have a variable number of asteroids that have a random
+spawn location, velocity, and yaw. This looks like the following.
+
+![](media/hello-asteroids.gif)

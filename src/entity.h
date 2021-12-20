@@ -1,5 +1,4 @@
 #include <allegro5/allegro.h>
-#include <allegro5/allegro_font.h>
 #include <allegro5/allegro_primitives.h>
 #include <math.h>
 #include <stdio.h>
@@ -10,10 +9,9 @@ typedef struct vec2d {
 	float y;
 } vec2d;
 
-typedef struct Spaceship {
+typedef struct Entity {
 	vec2d location;
-	int sw;
-	int sh;
+	vec2d screen;
 	float yaw;
 	float acceleration_speed;
 	float turn_speed;
@@ -22,9 +20,13 @@ typedef struct Spaceship {
 	bool alive;
 	ALLEGRO_COLOR color;
 	ALLEGRO_TRANSFORM transform;
-} Spaceship;
+} Entity;
 
-Spaceship* new_ship(int screen_w, int screen_h);
-void destroy_ship(Spaceship *ship);
-void draw_ship(Spaceship *ship);
-void update_ship(Spaceship *ship);
+void destroy_entity(Entity *e);
+void update_entity(Entity *e, const char* name);
+
+Entity* new_ship(int screen_w, int screen_h);
+void draw_ship(Entity *ship);
+
+Entity* new_asteroid(int screen_w, int screen_h);
+void draw_asteroid(Entity *asteroid);

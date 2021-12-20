@@ -1,11 +1,16 @@
-#include <stdbool.h>
-#include "spaceship.h"
+#include "entity.h"
 
 int main()
 {
+	int difficulty = 10;
 	int sw = 1280; // screen width
 	int sh = 720; // screen height
-	Spaceship *ship = new_ship(sw, sh);
+	Entity *ship = new_ship(sw, sh);
+	Entity *asteroids[difficulty];
+
+	int i;
+	for (i = 0; i < difficulty; i++)
+		asteroids[i] = new_asteroid(sw, sh);
 
 	al_init();
 	al_install_keyboard();
@@ -58,6 +63,8 @@ int main()
 		if (redraw && al_is_event_queue_empty(queue)) {
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 			draw_ship(ship);
+			for (i = 0; i < difficulty; i++)
+				draw_asteroid(asteroids[i]);
 			al_flip_display();
 			redraw = false;
 		}
@@ -66,7 +73,9 @@ int main()
 	al_destroy_display(display);
 	al_destroy_timer(timer);
 	al_destroy_event_queue(queue);
-	destroy_ship(ship);
+	destroy_entity(ship);
+	for (i = 0; i < difficulty; i++)
+		destroy_entity(asteroids[i]);
 
 	return 0;
 }
