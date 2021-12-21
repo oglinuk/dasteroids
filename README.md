@@ -556,3 +556,67 @@ With that we now have a variable number of asteroids that have a random
 spawn location, velocity, and yaw. This looks like the following.
 
 ![](media/hello-asteroids.gif)
+
+## Day 6
+
+Collision! Today is going to be implementing collision detection. My
+first thoughts on how to approach this is to calculate the area of the
+ship/asteroids and use check to see if their current `ship->location`
+(offset by the area) is intersecting with anything else. Asteroids should
+be able to interact, which is something the original game didnt have.
+
+Before I get to that, I want to abstract the draw function so I can
+re-use between the ship and asteroids. The `Entity` struct now has a
+`const vec2d *shape` variable which is what the new draw function uses
+when drawing the given entity. The new draw function looks like the
+following.
+
+```C
+void draw_entity(Entity *e)
+{
+	al_identity_transform(&e->transform);
+	al_rotate_transform(&e->transform, e->yaw);
+	al_translate_transform(&e->transform,
+		e->location.x, e->location.y);
+	al_use_transform(&e->transform);
+
+	int j = 1;
+	for (int i = 0; i < sizeof(e->shape); i++) {
+		al_draw_line(e->shape[i].x, e->shape[i].y,
+			e->shape[j].x, e->shape[j].y,
+			e->color, e->thickness);
+
+		i++;
+		j+=2;
+	}
+
+	update_entity(e);
+}
+```
+
+Everything works and we now have a polymorphic draw function. There is an
+issue with the current implementation, and I encourage you to look at the
+above `draw_entity` function to see if you can spot the bug.
+
+If you guessed `sizeof(e->shape)`, you guessed correct. Its actually kind
+of funny that this code works even though it shouldnt. Whats even better
+is if we remove the last four elements of `default_ship`, we get an
+awesome bug. It looks like the following.
+
+![](media/bug0.png)
+
+A print statement of the elements of `ship->shape` reveals the one
+line segment has  the coordinates `shape[4]:
+288945114583035409824972013568.000000 0.000000 | shape[5]: 1.414214
+0.523599`. At first glance, the numbers might seem random. If youre a
+nerd for math constants like I am though, `1.414214` and `0.523599`
+should look oddly familiar. The reason for that is because its what we
+are using for `ship->acceleration_speed` (`M_SQRT2`) and
+`ship->turn_speed` (`M_PI / 6`). I have no idea where the big number for
+`shape[4].x` comes from, or why `shape[4].y` is `0`, but am so amused by
+the bug that I am making a branch of the game around it. Instead of a
+blaster, that bugged out ship line segment will be like a lazer that cuts
+down asteroids (TODO way down the road).
+
+Collision will have to hold off until I make a better implementation of
+`draw_entity`.

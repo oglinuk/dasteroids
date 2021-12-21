@@ -10,8 +10,10 @@ typedef struct vec2d {
 } vec2d;
 
 typedef struct Entity {
+	const char* name;
 	vec2d location;
 	vec2d screen;
+	const vec2d *shape;
 	float yaw;
 	float acceleration_speed;
 	float turn_speed;
@@ -22,11 +24,9 @@ typedef struct Entity {
 	ALLEGRO_TRANSFORM transform;
 } Entity;
 
+void draw_entity(Entity *e);
+void update_entity(Entity *e);
 void destroy_entity(Entity *e);
-void update_entity(Entity *e, const char* name);
 
 Entity* new_ship(int screen_w, int screen_h);
-void draw_ship(Entity *ship);
-
 Entity* new_asteroid(int screen_w, int screen_h);
-void draw_asteroid(Entity *asteroid);

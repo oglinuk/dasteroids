@@ -41,17 +41,21 @@ int main()
 		if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
 			switch (event.keyboard.keycode) {
 			case ALLEGRO_KEY_W:
+			case ALLEGRO_KEY_UP:
 				if (ship->velocity < 9.899494937)
 					ship->velocity += ship->acceleration_speed;
 				break;
 			case ALLEGRO_KEY_A:
+			case ALLEGRO_KEY_LEFT:
 				ship->yaw -= ship->turn_speed;
 				break;
 			case ALLEGRO_KEY_S:
+			case ALLEGRO_KEY_DOWN:
 				if (ship->velocity > 0)
 					ship->velocity -= ship->acceleration_speed;
 				break;
 			case ALLEGRO_KEY_D:
+			case ALLEGRO_KEY_RIGHT:
 				ship->yaw += ship->turn_speed;
 				break;
 			case ALLEGRO_KEY_ESCAPE:
@@ -62,9 +66,9 @@ int main()
 
 		if (redraw && al_is_event_queue_empty(queue)) {
 			al_clear_to_color(al_map_rgb(0, 0, 0));
-			draw_ship(ship);
+			draw_entity(ship);
 			for (i = 0; i < difficulty; i++)
-				draw_asteroid(asteroids[i]);
+				draw_entity(asteroids[i]);
 			al_flip_display();
 			redraw = false;
 		}
