@@ -3,8 +3,6 @@
 const vec2d default_ship[] = {
 	{-8.0, 9.0}, {0.0, -11.0},
 	{0.0, -11.0}, {8.0, 9.0},
-	{-6.0, 4.0}, {-1.0, 4.0},
-	{6.0, 4.0}, {1.0, 4.0},
 };
 
 Entity* new_ship(int screen_w, int screen_h)
