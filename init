@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IMAGE="asteroids:0.1.0"
+IMAGE="oglinuk/dasteroids:0.1.0"
 NAME="dasteroids"
 
 build() {
