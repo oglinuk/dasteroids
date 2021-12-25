@@ -3,6 +3,8 @@
 #include <math.h>
 #include <stdio.h>
 
+#define ARRAYSIZE(a) sizeof(a) / sizeof(a[0])
+
 // see https://stackoverflow.com/a/44748651 && Day 3
 typedef struct vec2d {
 	float x;
@@ -14,6 +16,7 @@ typedef struct Entity {
 	vec2d location;
 	vec2d screen;
 	const vec2d *shape;
+	int shape_size;
 	float yaw;
 	float acceleration_speed;
 	float turn_speed;

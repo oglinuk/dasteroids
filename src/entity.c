@@ -9,7 +9,7 @@ void draw_entity(Entity *e)
 	al_use_transform(&e->transform);
 
 	int j = 1;
-	for (int i = 0; i < sizeof(e->shape); i++) {
+	for (int i = 0; i < e->shape_size; i++) {
 		printf("shape[%d]: %f %f | shape[%d]: %f %f\n",
 			i, e->shape[i].x, e->shape[i].y,
 			j, e->shape[j].x, e->shape[j].y);
@@ -21,11 +21,13 @@ void draw_entity(Entity *e)
 		i++;
 		j+=2;
 	}
+
 	update_entity(e);
 }
 
 void update_entity(Entity *e)
 {
+	// move ship
 	e->location.x -= sin(-e->yaw) * e->velocity;
 	e->location.y -= cos(-e->yaw) * e->velocity;
 

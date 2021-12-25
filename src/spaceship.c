@@ -17,6 +17,7 @@ Entity* new_ship(int screen_w, int screen_h)
 	ship->screen.x = screen_w;
 	ship->screen.y = screen_h;
 	ship->shape = default_ship;
+	ship->shape_size = ARRAYSIZE(default_ship);
 	ship->yaw = 0.0;
 	ship->acceleration_speed = M_SQRT2;
 	ship->turn_speed = M_PI / 6;

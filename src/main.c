@@ -42,7 +42,7 @@ int main()
 			switch (event.keyboard.keycode) {
 			case ALLEGRO_KEY_W:
 			case ALLEGRO_KEY_UP:
-				if (ship->velocity < 9.899494937)
+				if (ship->velocity < 9.899494936611665)
 					ship->velocity += ship->acceleration_speed;
 				break;
 			case ALLEGRO_KEY_A:
@@ -51,7 +51,7 @@ int main()
 				break;
 			case ALLEGRO_KEY_S:
 			case ALLEGRO_KEY_DOWN:
-				if (ship->velocity > 0)
+				if (ship->velocity > -4.242640687119286)
 					ship->velocity -= ship->acceleration_speed;
 				break;
 			case ALLEGRO_KEY_D:
@@ -63,6 +63,7 @@ int main()
 				break;
 			}
 		}
+
 
 		if (redraw && al_is_event_queue_empty(queue)) {
 			al_clear_to_color(al_map_rgb(0, 0, 0));

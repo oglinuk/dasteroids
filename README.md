@@ -10,7 +10,13 @@ purpose of this project is to continue my learning in C.
 
 # TODO
 
+* [ ] Implement collision
 * [ ] Make ship rainbow
+* [ ] Use random shape from array of shapes for asteroids
+* [ ] Add shapes other than an asteroid
+	* [ ] horse
+	* [ ] seal
+	* [ ] tux the penguin
 
 # Notes
 
@@ -620,3 +626,45 @@ down asteroids (TODO way down the road).
 
 Collision will have to hold off until I make a better implementation of
 `draw_entity`.
+
+## Day 7
+
+We have our polymorphic draw function, but as we discussed last time, it
+has a flaw with `sizeof(e->shape)`. If you still dont understand why it
+works/doesnt, the value always returned from `sizeof(e->shape)` will
+always be `8`. This is because the variable `shape` is a pointer, which
+means that `e->shape` is the memory address. In my case the size of
+pointers are 8 bytes. It wont matter if `shape` is larger or smaller when
+its actually assigned a value. To fix this issue, my thought is to add a
+`shape_size` variable to the `Entity` struct, and calculate the value in
+the constructors. To calculate the array size, we do `sizeof(array) /
+sizeof(array[0])`. Lets do an example using that calculation.
+
+```C
+const vec2d some_shape[] = {
+	{ -8.0, 9.0 }, { 0.0, -11.0 },
+	{ 0.0, -11.0 }, { 8.0, 9.0 },
+};
+```
+
+Its important to remember that `vec2d` is a struct containing two float
+variables, and the size of a float is `4`. This means that every element
+in `some_shape` is `8` bytes, and since there are `4` elements in
+`some_shape`, the total size is `8 * 4` or `32`. We have fixed the issue,
+and now the draw function will work regardless of the shape. Lets change
+the asteroid to a new shape to ensure it really does work.
+
+Our new asteroid shape looks like the following.
+
+```C
+const vec2d default_asteroid[] = {
+	{0.0, 0.0}, {8.0, -6.0},
+	{8.0, -6.0}, {25.0, -8.0},
+	{25.0, -8.0}, {33.0, 13.0},
+	{33.0, 13.0}, {15.0, 24.0},
+	{15.0, 24.0}, {0.0, 12.0},
+	{0.0, 12.0}, {0.0, 0.0}
+};
+```
+
+Everything is working and I can go back to working on collision.
